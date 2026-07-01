@@ -64,15 +64,14 @@ export const Login = () => {
     <Box className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
       <Card sx={{ width: "100%", maxWidth: 450, borderRadius: 3, boxShadow: 6 }}>
         <CardContent sx={{ p: 4 }}>
-          <Typography variant="h4" fontWeight={700} textAlign="center">
+          <Typography variant="h4" sx={{ fontWeight: 700, textAlign: "center" }}>
             Welcome Back
           </Typography>
 
           <Typography
             variant="body2"
             color="text.secondary"
-            textAlign="center"
-            sx={{ mt: 1, mb: 3 }}
+            sx={{ textAlign: "center", mt: 1, mb: 3 }}
           >
             Sign in to your POC Dashboard
           </Typography>
@@ -119,15 +118,15 @@ export const Login = () => {
           </Box>
 
           <Box className="mt-6 p-3 bg-gray-50 rounded-lg border border-gray-200">
-            <Typography variant="caption" fontWeight={600}>
+            <Typography variant="caption" sx={{ fontWeight: 600 }}>
               💡 Required Test Credentials:
             </Typography>
 
-            <Typography variant="caption" display="block" color="text.secondary">
+            <Typography variant="caption" sx={{ display: "block", color: "text.secondary" }}>
               username: <strong>mor_2314</strong>
             </Typography>
 
-            <Typography variant="caption" display="block" color="text.secondary">
+            <Typography variant="caption" sx={{ display: "block", color: "text.secondary" }}>
               password: <strong>83r5^_</strong>
             </Typography>
           </Box>

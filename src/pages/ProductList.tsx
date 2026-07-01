@@ -73,12 +73,12 @@ export const ProductList = () => {
   if (loading) {
     return (
       <Box className="flex justify-center items-center py-20">
-        <Stack alignItems="center" spacing={2}>
+        <Stack spacing={2} sx={{ alignItems: "center" }}>
           <CircularProgress />
-          <Typography color="text.secondary">
+          <Typography sx={{ color: "text.secondary" }}>
             Syncing live inventory stream...
           </Typography>
-        </Stack>
+        </Stack>  
       </Box>
     );
   }
@@ -87,11 +87,9 @@ export const ProductList = () => {
     <Box>
       <Stack
         direction="row"
-        justifyContent="space-between"
-        alignItems="center"
-        sx={{ mb: 3 }}
+        sx={{ mb: 3, justifyContent: "space-between", alignItems: "center" }}
       >
-        <Typography variant="h5" fontWeight={700}>
+        <Typography variant="h5" sx={{ fontWeight: 700 }}>
           Products Inventory
         </Typography>
 
@@ -133,17 +131,17 @@ export const ProductList = () => {
                   sx={{ cursor: "pointer" }}
                 >
                   <TableCell align="center">
-                    <Typography fontWeight={700}>{product.id}</Typography>
+                    <Typography sx={{ fontWeight: 700 }}>{product.id}</Typography>
                   </TableCell>
 
                   <TableCell sx={{ maxWidth: 350 }}>
-                    <Typography noWrap fontWeight={500}>
+                    <Typography noWrap sx={{ fontWeight: 500 }}>
                       {product.title}
                     </Typography>
                   </TableCell>
 
                   <TableCell>
-                    <Typography color="success.main" fontWeight={700}>
+                    <Typography sx={{ color: "success.main", fontWeight: 700 }}>
                       ${product.price.toFixed(2)}
                     </Typography>
                   </TableCell>
@@ -157,7 +155,7 @@ export const ProductList = () => {
                   </TableCell>
 
                   <TableCell align="center">
-                    <Stack direction="row" spacing={1} justifyContent="center">
+                    <Stack direction="row" spacing={1} sx={{ justifyContent: "center" }}>
                       <Button
                         size="small"
                         startIcon={<VisibilityIcon />}

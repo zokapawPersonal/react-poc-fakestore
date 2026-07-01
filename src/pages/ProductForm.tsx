@@ -99,17 +99,20 @@ export const ProductForm = () => {
       <Card sx={{ borderRadius: 3, boxShadow: 3 }}>
         <CardContent sx={{ p: { xs: 3, sm: 4 } }}>
           <Stack
+            component="div"
             direction={{ xs: "column", sm: "row" }}
-            justifyContent="space-between"
-            alignItems={{ xs: "flex-start", sm: "center" }}
             spacing={2}
+            sx={{
+              justifyContent: "space-between",
+              alignItems: { xs: "flex-start", sm: "center" },
+            }}
           >
             <Box>
-              <Typography variant="h5" fontWeight={700}>
+              <Typography variant="h5" sx={{ fontWeight: 700 }}>
                 Add New Product
               </Typography>
 
-              <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+              <Typography variant="body2" sx={{ color: "text.secondary", mt: 0.5 }}>
                 Register a new item to the local product inventory.
               </Typography>
             </Box>
@@ -146,23 +149,25 @@ export const ProductForm = () => {
 
               <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
                 <TextField
-                  label="Price ($ USD)"
-                  type="number"
-                  required
-                  fullWidth
-                  inputProps={{
-                    step: "0.01",
-                    min: "0.01",
-                  }}
-                  placeholder="0.00"
-                  value={formData.price || ""}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      price: parseFloat(e.target.value) || 0,
-                    })
-                  }
-                />
+  label="Price ($ USD)"
+  type="number"
+  required
+  fullWidth
+  slotProps={{
+    htmlInput: {
+      step: "0.01",
+      min: "0.01",
+    },
+  }}
+  placeholder="0.00"
+  value={formData.price ?? ""}
+  onChange={(e) =>
+    setFormData({
+      ...formData,
+      price: e.target.value === "" ? 0 : parseFloat(e.target.value),
+    })
+  }
+/>
 
                 <TextField
                   label="Category"
