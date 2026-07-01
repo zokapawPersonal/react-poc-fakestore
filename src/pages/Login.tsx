@@ -1,108 +1,138 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../hooks/useAuth';
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../hooks/useAuth";
+import {
+  Alert,
+  Box,
+  Button,
+  Card,
+  CardContent,
+  CircularProgress,
+  Stack,
+  TextField,
+  Typography,
+} from "@mui/material";
+import LoginIcon from "@mui/icons-material/Login";
 
 export const Login = () => {
-  // Strings strictly bound to schema requirements
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  
+
   const { login } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
+    setError("");
     setLoading(true);
 
     try {
-      const response = await fetch('https://fakestoreapi.com/auth/login', {
-        method: 'POST',
-        headers: { 
-          'Content-Type': 'application/json' // Tells the server to expect JSON format
+      const response = await fetch("https://fakestoreapi.com/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
         },
-        // Match the required JSON body schema: {"username": "string", "password": "string"}
-        body: JSON.stringify({ 
-          username: username.trim(), 
-          password: password.trim() 
-        })
+        body: JSON.stringify({
+          username: username.trim(),
+          password: password.trim(),
+        }),
       });
 
       if (!response.ok) {
-        throw new Error('Invalid username or password credentials.');
+        throw new Error("Invalid username or password credentials.");
       }
 
       const data = await response.json();
-      
+
       if (data.token) {
         login(data.token);
-        navigate('/products'); // Forward upon matching verification
+        navigate("/products");
       } else {
-        throw new Error('Token structure missing from API response context.');
+        throw new Error("Token structure missing from API response context.");
       }
-
     } catch (err) {
       const errorObject = err as Error;
-      setError(errorObject.message || 'Something went wrong.');
+      setError(errorObject.message || "Something went wrong.");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
-      <div className="bg-white p-8 rounded-xl shadow-lg w-full max-w-md">
-        <h2 className="text-3xl font-bold mb-2 text-center text-gray-800">Welcome Back</h2>
-        <p className="text-sm text-gray-500 text-center mb-6">Sign in to your POC Dashboard</p>
-        
-        {error && (
-          <div className="mb-4 p-3 bg-red-50 border-l-4 border-red-500 text-red-700 rounded text-sm">
-            {error}
-          </div>
-        )}
+    <Box className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
+      <Card sx={{ width: "100%", maxWidth: 450, borderRadius: 3, boxShadow: 6 }}>
+        <CardContent sx={{ p: 4 }}>
+          <Typography variant="h4" fontWeight={700} textAlign="center">
+            Welcome Back
+          </Typography>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1">Username (string)</label>
-            <input 
-              type="text" 
-              required 
-              value={username} 
-              onChange={e => setUsername(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
-              placeholder="e.g., mor_2314"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1">Password (string)</label>
-            <input 
-              type="password" 
-              required 
-              value={password} 
-              onChange={e => setPassword(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
-              placeholder="••••••••"
-            />
-          </div>
-
-          <button 
-            type="submit" 
-            disabled={loading}
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 rounded-lg transition disabled:bg-gray-400 mt-2 cursor-pointer"
+          <Typography
+            variant="body2"
+            color="text.secondary"
+            textAlign="center"
+            sx={{ mt: 1, mb: 3 }}
           >
-            {loading ? 'Validating Schema...' : 'Sign In'}
-          </button>
-        </form>
+            Sign in to your POC Dashboard
+          </Typography>
 
-        <div className="mt-6 p-3 bg-gray-50 rounded-lg border border-gray-200">
-          <p className="text-xs text-gray-600 font-medium mb-1">💡 Required Test Credentials:</p>
-          <p className="text-xs text-gray-500"><strong>username:</strong> mor_2314</p>
-          <p className="text-xs text-gray-500"><strong>password:</strong> 83r5^_</p>
-        </div>
-      </div>
-    </div>
+          {error && (
+            <Alert severity="error" sx={{ mb: 2 }}>
+              {error}
+            </Alert>
+          )}
+
+          <Box component="form" onSubmit={handleSubmit}>
+            <Stack spacing={2}>
+              <TextField
+                label="Username"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                placeholder="e.g., mor_2314"
+                required
+                fullWidth
+              />
+
+              <TextField
+                label="Password"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="••••••••"
+                required
+                fullWidth
+              />
+
+              <Button
+                type="submit"
+                variant="contained"
+                size="large"
+                disabled={loading}
+                startIcon={
+                  loading ? <CircularProgress size={18} /> : <LoginIcon />
+                }
+              >
+                {loading ? "Validating..." : "Sign In"}
+              </Button>
+            </Stack>
+          </Box>
+
+          <Box className="mt-6 p-3 bg-gray-50 rounded-lg border border-gray-200">
+            <Typography variant="caption" fontWeight={600}>
+              💡 Required Test Credentials:
+            </Typography>
+
+            <Typography variant="caption" display="block" color="text.secondary">
+              username: <strong>mor_2314</strong>
+            </Typography>
+
+            <Typography variant="caption" display="block" color="text.secondary">
+              password: <strong>83r5^_</strong>
+            </Typography>
+          </Box>
+        </CardContent>
+      </Card>
+    </Box>
   );
 };
