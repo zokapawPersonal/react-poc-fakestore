@@ -1,5 +1,25 @@
-import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import {
+  Alert,
+  Box,
+  Button,
+  Card,
+  Chip,
+  CircularProgress,
+  Stack,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Typography,
+  Paper,
+} from "@mui/material";
+import AddIcon from "@mui/icons-material/Add";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 export interface Product {
   id: number;
@@ -13,104 +33,158 @@ export interface Product {
 export const ProductList = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
   const navigate = useNavigate();
 
-  // Fetch the inventory matrix arrays on mount
   useEffect(() => {
-    fetch('https://fakestoreapi.com/products')
+    fetch("https://fakestoreapi.com/products")
       .then((res) => res.json())
       .then((data) => setProducts(data))
-      .catch((err) => console.error('Error fetching inventory:', err))
+      .catch((err) => {
+        console.error("Error fetching inventory:", err);
+        setError("Failed to load products.");
+      })
       .finally(() => setLoading(false));
   }, []);
 
-  // Handle API resource deletion and update UI state locally
   const handleDelete = async (id: number, e: React.MouseEvent) => {
-    e.stopPropagation(); // Stops row click from opening details page
-    if (!window.confirm(`Are you sure you want to delete Product #${id}?`)) return;
+    e.stopPropagation();
+
+    if (!window.confirm(`Are you sure you want to delete Product #${id}?`)) {
+      return;
+    }
 
     try {
-      const response = await fetch(`https://fakestoreapi.com/${id}`, {
-        method: 'DELETE',
+      const response = await fetch(`https://fakestoreapi.com/products/${id}`, {
+        method: "DELETE",
       });
 
       if (response.ok) {
         setProducts((prev) => prev.filter((p) => p.id !== id));
-        alert('Product deleted successfully (FakeStore API mock code 200 simulation).');
+        alert("Product deleted successfully.");
       }
     } catch (err) {
-      console.error('Delete target operation failed:', err);
-      alert('Delete operation failed.');
+      console.error("Delete operation failed:", err);
+      alert("Delete operation failed.");
     }
   };
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center py-20 text-lg font-medium text-gray-500">
-        Syncing live inventory stream...
-      </div>
+      <Box className="flex justify-center items-center py-20">
+        <Stack alignItems="center" spacing={2}>
+          <CircularProgress />
+          <Typography color="text.secondary">
+            Syncing live inventory stream...
+          </Typography>
+        </Stack>
+      </Box>
     );
   }
 
   return (
-    <div>
-      {/* Header Context Controls */}
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold text-gray-800">Products Inventory Inventory</h2>
-        <button 
-          onClick={() => navigate('/products/new')}
-          className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-semibold shadow transition cursor-pointer"
-        >
-          + Add New Product
-        </button>
-      </div>
+    <Box>
+      <Stack
+        direction="row"
+        justifyContent="space-between"
+        alignItems="center"
+        sx={{ mb: 3 }}
+      >
+        <Typography variant="h5" fontWeight={700}>
+          Products Inventory
+        </Typography>
 
-      {/* Responsive Grid Data Table Container */}
-      <div className="bg-white rounded-xl shadow-md border border-gray-200 overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
-            <thead>
-              <tr className="bg-gray-100 text-gray-700 font-semibold border-b border-gray-200">
-                <th className="p-4 w-16 text-center">ID</th>
-                <th className="p-4">Title</th>
-                <th className="p-4">Price</th>
-                <th className="p-4">Category</th>
-                <th className="p-4 text-center">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
+        <Button
+          variant="contained"
+          color="success"
+          startIcon={<AddIcon />}
+          onClick={() => navigate("/products/new")}
+        >
+          Add New Product
+        </Button>
+      </Stack>
+
+      {error && (
+        <Alert severity="error" sx={{ mb: 2 }}>
+          {error}
+        </Alert>
+      )}
+
+      <Card sx={{ borderRadius: 3, boxShadow: 3 }}>
+        <TableContainer component={Paper}>
+          <Table>
+            <TableHead>
+              <TableRow sx={{ backgroundColor: "grey.100" }}>
+                <TableCell align="center">ID</TableCell>
+                <TableCell>Title</TableCell>
+                <TableCell>Price</TableCell>
+                <TableCell>Category</TableCell>
+                <TableCell align="center">Actions</TableCell>
+              </TableRow>
+            </TableHead>
+
+            <TableBody>
               {products.map((product) => (
-                <tr 
-                  key={product.id} 
+                <TableRow
+                  key={product.id}
+                  hover
                   onClick={() => navigate(`/products/${product.id}`)}
-                  className="border-b border-gray-100 hover:bg-gray-50 cursor-pointer transition text-gray-600"
+                  sx={{ cursor: "pointer" }}
                 >
-                  <td className="p-4 text-center font-bold text-gray-900">{product.id}</td>
-                  <td className="p-4 font-medium text-gray-800 max-w-xs truncate">{product.title}</td>
-                  <td className="p-4 font-semibold text-green-600">${product.price.toFixed(2)}</td>
-                  <td className="p-4 capitalize"><span className="bg-gray-200 text-gray-800 text-xs px-2 py-1 rounded-md font-medium">{product.category}</span></td>
-                  <td className="p-4 text-center">
-                    <div className="flex justify-center gap-3">
-                      <button 
-                        onClick={(e) => { e.stopPropagation(); navigate(`/products/${product.id}`); }}
-                        className="text-blue-600 hover:text-blue-800 font-semibold text-sm"
+                  <TableCell align="center">
+                    <Typography fontWeight={700}>{product.id}</Typography>
+                  </TableCell>
+
+                  <TableCell sx={{ maxWidth: 350 }}>
+                    <Typography noWrap fontWeight={500}>
+                      {product.title}
+                    </Typography>
+                  </TableCell>
+
+                  <TableCell>
+                    <Typography color="success.main" fontWeight={700}>
+                      ${product.price.toFixed(2)}
+                    </Typography>
+                  </TableCell>
+
+                  <TableCell>
+                    <Chip
+                      label={product.category}
+                      size="small"
+                      variant="outlined"
+                    />
+                  </TableCell>
+
+                  <TableCell align="center">
+                    <Stack direction="row" spacing={1} justifyContent="center">
+                      <Button
+                        size="small"
+                        startIcon={<VisibilityIcon />}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          navigate(`/products/${product.id}`);
+                        }}
                       >
                         View
-                      </button>
-                      <button 
+                      </Button>
+
+                      <Button
+                        size="small"
+                        color="error"
+                        startIcon={<DeleteIcon />}
                         onClick={(e) => handleDelete(product.id, e)}
-                        className="text-red-600 hover:text-red-800 font-semibold text-sm"
                       >
                         Delete
-                      </button>
-                    </div>
-                  </td>
-                </tr>
+                      </Button>
+                    </Stack>
+                  </TableCell>
+                </TableRow>
               ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </Card>
+    </Box>
   );
 };

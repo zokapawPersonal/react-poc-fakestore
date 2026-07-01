@@ -1,5 +1,14 @@
-import { Outlet, useNavigate } from 'react-router-dom';
-import { useAuth } from '../hooks/useAuth';
+import { Outlet, useNavigate } from "react-router-dom";
+import { useAuth } from "../hooks/useAuth";
+import {
+  AppBar,
+  Toolbar,
+  Typography,
+  Button,
+  Container,
+  Box,
+} from "@mui/material";
+import LogoutIcon from "@mui/icons-material/Logout";
 
 export const Layout = () => {
   const { logout } = useAuth();
@@ -7,31 +16,43 @@ export const Layout = () => {
 
   const handleLogout = () => {
     logout();
-    navigate('/login');
+    navigate("/login");
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col font-sans">
-      {/* Navigation Header */}
-      <nav className="bg-blue-600 text-white px-6 py-4 flex justify-between items-center shadow-md">
-        <h1 
-          className="text-xl font-bold cursor-pointer hover:text-blue-100 transition" 
-          onClick={() => navigate('/products')}
-        >
-          Store Management POC
-        </h1>
-        <button 
-          onClick={handleLogout} 
-          className="bg-red-500 hover:bg-red-600 px-4 py-2 rounded-lg text-sm font-semibold shadow transition cursor-pointer"
-        >
-          Logout
-        </button>
-      </nav>
+    <Box className="min-h-screen bg-gray-50 flex flex-col">
+      <AppBar position="static">
+        <Toolbar>
+          <Typography
+            variant="h6"
+            sx={{ flexGrow: 1, cursor: "pointer", fontWeight: 700 }}
+            onClick={() => navigate("/products")}
+          >
+            Store Management POC
+          </Typography>
 
-      {/* Main Content Workspace Layout Viewport */}
-      <main className="flex-1 p-6 max-w-7xl w-full mx-auto">
+          <Button
+            color="inherit"
+            variant="outlined"
+            startIcon={<LogoutIcon />}
+            onClick={handleLogout}
+            sx={{
+              borderColor: "white",
+              color: "white",
+              "&:hover": {
+                borderColor: "white",
+                backgroundColor: "rgba(255,255,255,0.12)",
+              },
+            }}
+          >
+            Logout
+          </Button>
+        </Toolbar>
+      </AppBar>
+
+      <Container maxWidth="xl" className="flex-1 py-6">
         <Outlet />
-      </main>
-    </div>
+      </Container>
+    </Box>
   );
 };
