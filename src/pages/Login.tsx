@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
+import { loginUser } from "../services/authService";
 import {
   Alert,
   Box,
@@ -25,36 +26,22 @@ export const Login = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
     setError("");
     setLoading(true);
 
     try {
-      const response = await fetch("https://fakestoreapi.com/auth/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          username: username.trim(),
-          password: password.trim(),
-        }),
-      });
+      const data = await loginUser(username.trim(), password.trim());
 
-      if (!response.ok) {
-        throw new Error("Invalid username or password credentials.");
+      if (!data.token) {
+        throw new Error("Token missing from login response.");
       }
 
-      const data = await response.json();
-
-      if (data.token) {
-        login(data.token);
-        navigate("/products");
-      } else {
-        throw new Error("Token structure missing from API response context.");
-      }
+      login(data.token);
+      navigate("/products");
     } catch (err) {
       const errorObject = err as Error;
-      setError(errorObject.message || "Something went wrong.");
+      setError(errorObject.message || "Invalid username or password.");
     } finally {
       setLoading(false);
     }
@@ -64,7 +51,10 @@ export const Login = () => {
     <Box className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
       <Card sx={{ width: "100%", maxWidth: 450, borderRadius: 3, boxShadow: 6 }}>
         <CardContent sx={{ p: 4 }}>
-          <Typography variant="h4" sx={{ fontWeight: 700, textAlign: "center" }}>
+          <Typography
+            variant="h4"
+            sx={{ fontWeight: 700, textAlign: "center" }}
+          >
             Welcome Back
           </Typography>
 
@@ -122,11 +112,11 @@ export const Login = () => {
               💡 Required Test Credentials:
             </Typography>
 
-            <Typography variant="caption" sx={{ display: "block", color: "text.secondary" }}>
+            <Typography variant="caption" sx={{ display: "block" }} color="text.secondary">
               username: <strong>mor_2314</strong>
             </Typography>
 
-            <Typography variant="caption" sx={{ display: "block", color: "text.secondary" }}>
+            <Typography variant="caption" sx={{ display: "block" }} color="text.secondary">
               password: <strong>83r5^_</strong>
             </Typography>
           </Box>

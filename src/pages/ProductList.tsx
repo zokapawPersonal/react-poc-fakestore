@@ -21,14 +21,8 @@ import AddIcon from "@mui/icons-material/Add";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import DeleteIcon from "@mui/icons-material/Delete";
 
-export interface Product {
-  id: number;
-  title: string;
-  price: number;
-  description: string;
-  category: string;
-  image: string;
-}
+import type { Product } from "../models/Product";
+import { getProducts, deleteProduct } from "../services/productService";
 
 export const ProductList = () => {
   const [products, setProducts] = useState<Product[]>([]);
@@ -38,8 +32,7 @@ export const ProductList = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetch("https://fakestoreapi.com/products")
-      .then((res) => res.json())
+    getProducts()
       .then((data) => setProducts(data))
       .catch((err) => {
         console.error("Error fetching inventory:", err);
@@ -56,14 +49,10 @@ export const ProductList = () => {
     }
 
     try {
-      const response = await fetch(`https://fakestoreapi.com/products/${id}`, {
-        method: "DELETE",
-      });
+      await deleteProduct(id);
 
-      if (response.ok) {
-        setProducts((prev) => prev.filter((p) => p.id !== id));
-        alert("Product deleted successfully.");
-      }
+      setProducts((prev) => prev.filter((p) => p.id !== id));
+      alert("Product deleted successfully.");
     } catch (err) {
       console.error("Delete operation failed:", err);
       alert("Delete operation failed.");
@@ -78,7 +67,7 @@ export const ProductList = () => {
           <Typography sx={{ color: "text.secondary" }}>
             Syncing live inventory stream...
           </Typography>
-        </Stack>  
+        </Stack>
       </Box>
     );
   }
@@ -131,7 +120,9 @@ export const ProductList = () => {
                   sx={{ cursor: "pointer" }}
                 >
                   <TableCell align="center">
-                    <Typography sx={{ fontWeight: 700 }}>{product.id}</Typography>
+                    <Typography sx={{ fontWeight: 700 }}>
+                      {product.id}
+                    </Typography>
                   </TableCell>
 
                   <TableCell sx={{ maxWidth: 350 }}>
@@ -155,7 +146,11 @@ export const ProductList = () => {
                   </TableCell>
 
                   <TableCell align="center">
-                    <Stack direction="row" spacing={1} sx={{ justifyContent: "center" }}>
+                    <Stack
+                      direction="row"
+                      spacing={1}
+                      sx={{ justifyContent: "center" }}
+                    >
                       <Button
                         size="small"
                         startIcon={<VisibilityIcon />}

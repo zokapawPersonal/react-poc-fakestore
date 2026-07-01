@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { type Product } from "./ProductList";
 import {
   Alert,
   Box,
@@ -14,6 +13,9 @@ import {
   Typography,
 } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+
+import type { Product } from "../models/Product";
+import { getProductById } from "../services/productService";
 
 export const ProductDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -33,13 +35,7 @@ export const ProductDetail = () => {
 
     const fetchProductData = async () => {
       try {
-        const res = await fetch(`https://fakestoreapi.com/products/${id}`);
-
-        if (!res.ok) {
-          throw new Error("Failed to retrieve item info.");
-        }
-
-        const data: Product = await res.json();
+        const data = await getProductById(Number(id));
 
         if (isMounted) {
           setProduct(data);
@@ -150,7 +146,10 @@ export const ProductDetail = () => {
                 {product.title}
               </Typography>
 
-              <Typography variant="body2" sx={{ color: "text.secondary", mb: 3 }}>
+              <Typography
+                variant="body2"
+                sx={{ color: "text.secondary", mb: 3 }}
+              >
                 Product ID Reference: #{product.id}
               </Typography>
 
@@ -162,12 +161,19 @@ export const ProductDetail = () => {
 
               <Typography
                 variant="caption"
-                sx={{ color: "text.secondary", fontWeight: 700, textTransform: "uppercase" }}
+                sx={{
+                  color: "text.secondary",
+                  fontWeight: 700,
+                  textTransform: "uppercase",
+                }}
               >
                 Price Value
               </Typography>
 
-              <Typography variant="h4" sx={{ color: "success.main", fontWeight: 900 }}>
+              <Typography
+                variant="h4"
+                sx={{ color: "success.main", fontWeight: 900 }}
+              >
                 ${product.price.toFixed(2)}
               </Typography>
             </Box>

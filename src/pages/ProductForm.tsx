@@ -15,13 +15,8 @@ import {
 import SaveIcon from "@mui/icons-material/Save";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
-interface NewProductInput {
-  title: string;
-  price: number;
-  description: string;
-  category: string;
-  image: string;
-}
+import type { NewProductInput } from "../models/Product";
+import { createProduct } from "../services/productService";
 
 export const ProductForm = () => {
   const navigate = useNavigate();
@@ -49,19 +44,7 @@ export const ProductForm = () => {
     }
 
     try {
-      const response = await fetch("https://fakestoreapi.com/products", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      });
-
-      if (!response.ok) {
-        throw new Error("Server rejected product payload registration.");
-      }
-
-      const apiResult = await response.json();
+      const apiResult = await createProduct(formData);
       console.log("FakeStore API mock response:", apiResult);
 
       const hybridNewProduct = {
@@ -112,7 +95,10 @@ export const ProductForm = () => {
                 Add New Product
               </Typography>
 
-              <Typography variant="body2" sx={{ color: "text.secondary", mt: 0.5 }}>
+              <Typography
+                variant="body2"
+                sx={{ color: "text.secondary", mt: 0.5 }}
+              >
                 Register a new item to the local product inventory.
               </Typography>
             </Box>
@@ -149,25 +135,28 @@ export const ProductForm = () => {
 
               <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
                 <TextField
-  label="Price ($ USD)"
-  type="number"
-  required
-  fullWidth
-  slotProps={{
-    htmlInput: {
-      step: "0.01",
-      min: "0.01",
-    },
-  }}
-  placeholder="0.00"
-  value={formData.price ?? ""}
-  onChange={(e) =>
-    setFormData({
-      ...formData,
-      price: e.target.value === "" ? 0 : parseFloat(e.target.value),
-    })
-  }
-/>
+                  label="Price ($ USD)"
+                  type="number"
+                  required
+                  fullWidth
+                  slotProps={{
+                    htmlInput: {
+                      step: "0.01",
+                      min: "0.01",
+                    },
+                  }}
+                  placeholder="0.00"
+                  value={formData.price || ""}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      price:
+                        e.target.value === ""
+                          ? 0
+                          : parseFloat(e.target.value),
+                    })
+                  }
+                />
 
                 <TextField
                   label="Category"
